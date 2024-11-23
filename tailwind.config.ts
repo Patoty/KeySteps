@@ -5,6 +5,7 @@ export default {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./node_modules/flowbite/**/*.js"
   ],
   theme: {
     extend: {
@@ -14,5 +15,8 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    require('flowbite/plugin')
+],
 } satisfies Config;
