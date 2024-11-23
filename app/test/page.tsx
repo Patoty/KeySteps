@@ -22,17 +22,21 @@ export default function Home() {
 
 		}
 
-		let immoList = getImmoLists(pablo.workplace, pablo.obj_type, "Garching bei München", pablo.sqm);
-		if (immoList == null) {
+		//const max_val: number = aggCosts(pablo.self_capital, pablo.income, pablo.payment_rate, pablo.state);
+		const max_val = 1000000;
 
-		}
+		//let immoList = getImmoLists(pablo.workplace, pablo.obj_type, "Garching bei München", pablo.sqm, max_val);
+		//if (immoList == null) {
+		//	console.log("no data from immo");
+		//}
+		getImmoLists(pablo.workplace, pablo.obj_type, "Garching bei München", pablo.sqm, max_val);
 	}, []);
 
 	const aggCosts = async (self_capital: number, income: number, payment_rate: number, state: string) => {
 
 	}
 
-	const getImmoLists = async (search_around: string, obj_type: workspace, city: string, sqm: number) => {
+	const getImmoLists = async (search_around: string, obj_type: workspace, city: string, sqm: number, max_val: number) => {
 
 		let type = "";
 		if (obj_type == workspace.apartment) {
@@ -47,37 +51,19 @@ export default function Home() {
 
 		const sqm_max = sqm + 20;
 		const sqm_min = sqm < 20 ? 0 : sqm - 20;
+		const sqm_max_price = max_val / sqm_max;
 
+		const geoSearch = `[{"geoSearchType":"city","region":"Bayern","geoSearchQuery":"${city}"}]`;
 
 		try {
 
-			const body_raw = JSON.stringify({
-				"filter": {
-					"type": type,
-					"excludedFields": "true",
-					"geoSearches": [{
-						//"geoSearchType": "zipCode",
-						//"zipCode": "85748",
-						"geoSearchType": "city",
-						"geoSearchQuery": city,
-						"region": "Bayern",
-					}],
-					"averageAggregation": "buyingPrice",
-					"sqmFrom": sqm_min,
-					"sqmTo": sqm_max,
-
-
-				}
-
-			});
-
 			const requestOptions = {
 				method: "GET",
-				body: body_raw,
 			};
+
+			const results = 20;
 			
-			let url = "https://api.thinkimmo.com/immo?type=APARTMENTBUY&excludedFields=true&geoSearches=[%7B%22geoSearchQuery%22:%22Garching+bei+M%C3%BCnchen%22,%22geoSearchType%22:%22zipCode%22,%22zipCode%22:%2285748%22,%22region%22:%22Bayern%22%7D]&averageAggregation=buyingPrice%3BpricePerSqm%3BsquareMeter%3BconstructionYear%3BrentPrice%3BrentPricePerSqm%3BrunningTime&termsAggregation=platforms.name.keyword,60";
-			let mod_url = "https://api.thinkimmo.com/immo";
+			let mod_url = `https://api.thinkimmo.com/immo?type=${type}&excludedFields=true&size=${results}&sqmFrom=${sqm_min}&sqmTo=${sqm_max}&pricePerSqmTo=${sqm_max_price}&excludedFields=true&geoSearches=${geoSearch}`; 
 
 			const response = await fetch(mod_url, requestOptions);
 			if (!response.ok) {
