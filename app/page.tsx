@@ -1,50 +1,7 @@
 "use client";
 import Image from "next/image";
-import { useEffect } from "react";
 
 export default function Home() {
-  useEffect(() => {
-    async function fetchAlertData() {
-      try {
-        // Call the Next.js API route
-        const myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        myHeaders.append(
-          "AuthorizationApi",
-          "6a01979b-64e1-46cd-adff-69ff574f27c2"
-        );
-
-        const raw = JSON.stringify({
-          customer_id: "customer_id",
-          alertSettings: {},
-          filter: {},
-        });
-
-        const requestOptions = {
-          method: "POST",
-          headers: myHeaders,
-          body: raw,
-        };
-
-        const response = await fetch("/api/thinkimmo", requestOptions);
-        if (!response.ok) {
-          throw new Error("Failed to fetch data from the server");
-        }
-
-        // Parse the JSON response
-        const data = await response.json();
-
-        // Log the fetched data to the browser's console
-        console.log("Fetched data from the server:", data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-
-    // Fetch alert data on component mount
-    fetchAlertData();
-  }, []);
-
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:const(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
