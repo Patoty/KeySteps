@@ -7,6 +7,7 @@ export default {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/flowbite/**/*.js",
   ],
+  darkMode: "selector",
   theme: {
     extend: {
       colors: {
@@ -19,13 +20,11 @@ export default {
         "secondary-ripple": "#92c0cc",
         "secondary-hover": "#478898",
         "secondary-hover-ripple": "#599fb1",
-        "secondary-text": "#fff",
         "secondary-light": "#9ec7d1",
         tertiary: "#8bc44a",
         "tertiary-ripple": "#b4d989",
         "tertiary-hover": "#77ad38",
         "tertiary-hover-ripple": "#8cc44b",
-        "tertiary-text": "#fff",
         "tertiary-light": "#bcdd96",
       },
     },
