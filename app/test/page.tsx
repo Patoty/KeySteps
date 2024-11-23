@@ -24,13 +24,12 @@ export default function Home() {
 
 		//const max_val: number = aggCosts(pablo.self_capital, pablo.income, pablo.payment_rate, pablo.state);
 		const max_val = 2000000;
+		const city = "Garching bei München";
 
-		//let immoList = getImmoLists(pablo.workplace, pablo.obj_type, "Garching bei München", pablo.sqm, max_val);
-		//if (immoList == null) {
-		//	console.log("no data from immo");
-		//}
-		//getImmoLists(pablo.workplace, pablo.obj_type, "Garching bei München", pablo.sqm, max_val);
-		getImmoLists(pablo.workplace, pablo.obj_type, "München", pablo.sqm, max_val);
+		let immoList = getImmoLists(pablo.workplace, pablo.obj_type, city, pablo.sqm, max_val);
+		if (immoList == null) {
+			console.log("no data from immo");
+		}
 	}, []);
 
 	const aggCosts = async (self_capital: number, income: number, payment_rate: number, state: string) => {
