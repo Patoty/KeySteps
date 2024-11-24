@@ -25,8 +25,8 @@ export default function Home() {
       <section className="-mt-20">
         <div className="gap-16 items-center py-8 px-4 mx-auto max-w-screen-xl lg:grid lg:grid-cols-4 lg:py-16 lg:px-6">
           <div className="font-light text-gray-500 sm:text-lg dark:text-gray-400">
-              <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">We didn't reinvent the wheel</h2>
-              <p className="mb-4">We are strategists, designers and developers. </p>
+              <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">Your Guide</h2>
+              <p className="mb-4">Searching a new home? Ever wondered, where to start your search? Find all the relevant information with Keysteps.</p>
           </div>
           <div className="grid grid-cols-3 gap-4 col-span-3 mt-8">
               <img className="w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/content/office-long-2.png" alt="office content 1" />
@@ -42,7 +42,7 @@ export default function Home() {
           <div className="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-6">
               <div className="mx-auto mb-8 max-w-screen-sm lg:mb-16">
                   <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-black">Our team</h2>
-                  <p className="font-light sm:text-xl text-black">Explore the whole collection of open-source web components and elements built with the utility classes from Tailwind</p>
+                  <p className="font-light sm:text-xl text-black">Explore the people that brought this project to life during the hackaTUM!</p>
               </div> 
               <div className="grid gap-8 lg:gap-16 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4">
                   <div className="text-center text-gray-500 dark:text-gray-400">
