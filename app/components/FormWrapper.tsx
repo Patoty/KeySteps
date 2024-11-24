@@ -31,6 +31,7 @@ export default function FormWrapper() {
 
         console.log(formObject);
         const workplaceLoc = selectedWorkplace?.geometry?.location?.toJSON();
+        console.log(workplaceLoc);
 
         const data: user = {
             sqm_min: parseInt(formObject.sqmin),
@@ -38,28 +39,28 @@ export default function FormWrapper() {
             obj_type: formObject.category == "apartment" ? workspace.apartment : workspace.house,
 
             workplace: formObject.workplace,
-            workplace_lat: 69,
-            workplace_lon: 69,
+            workplace_lat: workplaceLoc.lat,
+            workplace_lon: workplaceLoc.lon,
 
-            self_capital: 50000,
-            income: 5000,
+            self_capital: +formObject.capital,
+            income: +formObject.income,
             state: "Bayern", //everything else is disgusting (nrw is okay because leonardo might live there)
-            payment_rate: 2000,
+            payment_rate: +formObject.rate,
 
             weights: {
-                school: 5,
-                workplace: 10,
-                kindergarden: 0,
-                supermarket: 7,
-                publicTransport: 0,
+                school: +formObject.schoolweight,
+                workplace: +formObject.worplaceweight,
+                kindergarden: +formObject.kindergarden,
+                supermarket: +formObject.supermarketweight,
+                publicTransport: +formObject.publicTransportweight,
             },
 
             max_distances: {
-                school: 10000,
-                workplace: 5000,
-                kindergarden: 0,
-                publicTransport: 1000,
-                supermarket: 1000,
+                school: +formObject.school,
+                workplace: +formObject.workplaceDis,
+                kindergarden: +formObject.kindergarden,
+                publicTransport: +formObject.publicTransport,
+                supermarket: +formObject.supermarket,
             },
 
             city: "Garching bei München",
@@ -158,14 +159,6 @@ export default function FormWrapper() {
                                                     <PlaceAutocomplete onPlaceSelect={setSelectedWorkplace} workplace />
                                                 </div>
                                             </div>
-                                            <div>
-                                                <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900">What home type are we favoring?</label>
-                                                <select id="category" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                                    <option>Select a category</option>
-                                                    <option value="house">House</option>
-                                                    <option value="apartment">Apartment</option>
-                                                </select>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -200,7 +193,7 @@ export default function FormWrapper() {
                                                 <label htmlFor="workplaceDis" className="text-sm mb-2 font-medium text-gray-900">Workplace</label>
                                                 <label htmlFor="kindergarden" className="text-sm mb-2 font-medium text-gray-900">Kindergarden</label>
                                                 <label htmlFor="supermarket" className="text-sm mb-2 font-medium text-gray-900">Supermarket</label>
-                                                <label htmlFor="income" className="text-sm mb-2 font-medium text-gray-900">Income</label>
+                                                <label htmlFor="publicTransport" className="text-sm mb-2 font-medium text-gray-900">Income</label>
 
                                                 <div className='flex gap-x-4'>
                                                     <input placeholder='0' type='number' max={9998} min={0} name="school" id="school" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
@@ -215,29 +208,29 @@ export default function FormWrapper() {
                                                     <input placeholder='0' type='number' max={9998} min={0} name="supermarket" id="supermarket" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
                                                 </div>
                                                 <div className='flex gap-x-4'>
-                                                    <input placeholder='0' type='number' max={9998} min={0} name="income" id="income" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                    <input placeholder='0' type='number' max={9998} min={0} name="publicTransport" id="publicTransport" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
                                                 </div>
 
-                                                <label htmlFor="school-weight" className="text-sm mb-2 font-medium text-gray-900">and weights</label>
-                                                <label htmlFor="workplace-weight" className="text-sm mb-2 font-medium text-gray-900"></label>
-                                                <label htmlFor="kindergarden-weight" className="text-sm mb-2 font-medium text-gray-900"></label>
-                                                <label htmlFor="supermarket-weight" className="text-sm mb-2 font-medium text-gray-900"></label>
-                                                <label htmlFor="income-weight" className="text-sm mb-2 font-medium text-gray-900"></label>
+                                                <label htmlFor="schoolweight" className="text-sm mb-2 font-medium text-gray-900">and weights</label>
+                                                <label htmlFor="workplaceweight" className="text-sm mb-2 font-medium text-gray-900"></label>
+                                                <label htmlFor="kindergardenweight" className="text-sm mb-2 font-medium text-gray-900"></label>
+                                                <label htmlFor="supermarketweight" className="text-sm mb-2 font-medium text-gray-900"></label>
+                                                <label htmlFor="publicTransportweight" className="text-sm mb-2 font-medium text-gray-900"></label>
 
                                                 <div className='flex gap-x-4'>
-                                                    <input placeholder='0' type='number' max={5} min={0} name="school-weight" id="school-weight" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                    <input placeholder='0' type='number' max={5} min={0} name="schoolweight" id="schoolweight" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
                                                 </div>
                                                 <div className='flex gap-x-4'>
-                                                    <input placeholder='0' type='number' max={5} min={0} name="workplace-weight" id="workplace-weight" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                    <input placeholder='0' type='number' max={5} min={0} name="workplaceweight" id="workplaceweight" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
                                                 </div>
                                                 <div className='flex gap-x-4'>
-                                                    <input placeholder='0' type='number' max={5} min={0} name="kindergarden-weight" id="kindergarden-weight" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                    <input placeholder='0' type='number' max={5} min={0} name="kindergardenweight" id="kindergardenweight" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
                                                 </div>
                                                 <div className='flex gap-x-4'>
-                                                    <input placeholder='0' type='number' max={5} min={0} name="supermarket-weight" id="supermarket-weight" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                    <input placeholder='0' type='number' max={5} min={0} name="supermarketweight" id="supermarketweight" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
                                                 </div>
                                                 <div className='flex gap-x-4'>
-                                                    <input placeholder='0' type='number' max={5} min={0} name="income-weight" id="income-weight" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                    <input placeholder='0' type='number' max={5} min={0} name="publicTransportweight" id="publicTransportweight" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
                                                 </div>
 
                                             </div>
