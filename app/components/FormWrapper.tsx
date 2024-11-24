@@ -193,7 +193,7 @@ export default function FormWrapper() {
                                                 <label htmlFor="workplaceDis" className="text-sm mb-2 font-medium text-gray-900">Workplace</label>
                                                 <label htmlFor="kindergarden" className="text-sm mb-2 font-medium text-gray-900">Kindergarden</label>
                                                 <label htmlFor="supermarket" className="text-sm mb-2 font-medium text-gray-900">Supermarket</label>
-                                                <label htmlFor="publicTransport" className="text-sm mb-2 font-medium text-gray-900">Income</label>
+                                                <label htmlFor="publicTransport" className="text-sm mb-2 font-medium text-gray-900">Public Transport</label>
 
                                                 <div className='flex gap-x-4'>
                                                     <input placeholder='0' type='number' max={9998} min={0} name="school" id="school" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
