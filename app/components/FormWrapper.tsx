@@ -10,7 +10,7 @@ import { getListings } from '../immoAction';
 import { user, workspace } from '../actionDefinition';
 
 
-export default function FormWrapper({ initData }) {
+export default function FormWrapper() {
     const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_API;
     const [selectedRegion, setSelectedRegion] =
         useState<google.maps.places.PlaceResult | null>(null);
@@ -63,8 +63,9 @@ export default function FormWrapper({ initData }) {
             city: "Garching bei München",
         };
 
-        const res = await getListings(data);
-        initData(res);
+        // const res = await getListings(data);
+        // console.log(res)
+        // initData(res);
     }
     return (
         <APIProvider apiKey={GOOGLE_MAPS_API_KEY || ''} version="weekly" libraries={['places']}

@@ -15,40 +15,41 @@ import {
 } from "./actionDefinition";
 
 // DUMMY DATA
-// const user_inst: user = {
-//   sqm_min: 60,
-//   sqm_max: 40,
-//   obj_type: workspace.apartment, //or "house"
+const user_inst: user = {
+  sqm_min: 40,
+  sqm_max: 60,
+  obj_type: workspace.apartment, //or "house"
 
-//   workplace: "Boltzmannstraße 3 85748 Garching bei München",
-//   workplace_lat: 69,
-//   workplace_lon: 69,
+  workplace: "Boltzmannstraße 3 85748 Garching bei München",
+  workplace_lat: 69,
+  workplace_lon: 69,
 
-//   self_capital: 50000,
-//   income: 5000,
-//   state: "Bayern", //everything else is disgusting (nrw is okay because leonardo might live there)
-//   payment_rate: 2000,
+  self_capital: 50000,
+  income: 5000,
+  state: "Bayern", //everything else is disgusting (nrw is okay because leonardo might live there)
+  payment_rate: 2000,
 
-//   weights: {
-//     school: 5,
-//     workplace: 10,
-//     kindergarden: 0,
-//     supermarket: 7,
-//     publicTransport: 0,
-//   },
+  weights: {
+    school: 5,
+    workplace: 10,
+    kindergarden: 0,
+    supermarket: 7,
+    publicTransport: 0,
+  },
 
-//   max_distances: {
-//     school: 10000,
-//     workplace: 5000,
-//     kindergarden: 0,
-//     publicTransport: 1000,
-//     supermarket: 1000,
-//   },
+  max_distances: {
+    school: 10000,
+    workplace: 5000,
+    kindergarden: 0,
+    publicTransport: 1000,
+    supermarket: 1000,
+  },
 
-//   city: "Garching bei München",
-// };
+  city: "Garching bei München",
+};
 
 export async function getListings(user_inst: user) {
+  console.log("adad");
   const max_val: number = await getAggCost(
     user_inst.self_capital,
     user_inst.income,
@@ -58,12 +59,11 @@ export async function getListings(user_inst: user) {
   // eslint-disable-next-line prefer-const
   let immoList: listing[] = await getImmoLists(
     user_inst.workplace,
-    user_inst.obj_type,
-    user_inst.city,
-    user_inst.sqm_min,
-    user_inst.sqm_max,
-    max_val
+    max_val,
+    user_inst
   );
+
+  console.log(immoList);
 
   if (immoList) {
     immoList.forEach((element: listing, _index: number) => {
@@ -73,62 +73,73 @@ export async function getListings(user_inst: user) {
 
       element.workplaceDistance = Math.sqrt(squared_sum);
 
-      const loc = element.locationFactor.microLocation;
+      const loc = element?.locationFactor?.microLocation;
+      if (!loc) {
+        return null;
+      }
       const user_metric: weightOrMetric = {
         workplace:
           user_inst.max_distances.workplace - element.workplaceDistance,
         school:
-          user_inst.max_distances.school -
-          Math.min.apply(
-            user_inst.max_distances.school,
-            loc.schools.map(
-              (
-                val: listing_locationFactor_microLocation_schools,
-                _index: number
-              ) => {
-                return val.distance;
-              }
-            )
-          ),
+          loc?.schools != null
+            ? user_inst.max_distances.school -
+              Math.min.apply(
+                user_inst.max_distances.school,
+                loc?.schools.map(
+                  (
+                    val: listing_locationFactor_microLocation_schools,
+                    _index: number
+                  ) => {
+                    return val.distance;
+                  }
+                )
+              )
+            : 0,
         kindergarden:
-          user_inst.max_distances.kindergarden -
-          Math.min.apply(
-            user_inst.max_distances.kindergarden,
-            loc.kindergarten.map(
-              (
-                val: listing_locationFactor_microLocation_kindergarten,
-                _index: number
-              ) => {
-                return val.distance;
-              }
-            )
-          ),
+          loc?.kindergarten != null
+            ? user_inst.max_distances.kindergarden -
+              Math.min.apply(
+                user_inst.max_distances.kindergarden,
+                loc.kindergarten.map(
+                  (
+                    val: listing_locationFactor_microLocation_kindergarten,
+                    _index: number
+                  ) => {
+                    return val.distance;
+                  }
+                )
+              )
+            : 0,
         supermarket:
-          user_inst.max_distances.supermarket -
-          Math.min.apply(
-            user_inst.max_distances.supermarket,
-            loc.supermarkets.map(
-              (
-                val: listing_locationFactor_microLocation_supermarkets,
-                _index: number
-              ) => {
-                return val.distance;
-              }
-            )
-          ),
+          loc?.supermarkets != null
+            ? user_inst.max_distances.supermarket -
+              Math.min.apply(
+                user_inst.max_distances.supermarket,
+                loc.supermarkets.map(
+                  (
+                    val: listing_locationFactor_microLocation_supermarkets,
+                    _index: number
+                  ) => {
+                    return val.distance;
+                  }
+                )
+              )
+            : 0,
         publicTransport:
-          user_inst.max_distances.publicTransport -
-          Math.min.apply(
-            user_inst.max_distances.publicTransport,
-            loc.publicTransport.map(
-              (
-                val: listing_locationFactor_microLocation_publicTransport,
-                _index: number
-              ) => {
-                return val.distance;
-              }
-            )
-          ),
+          loc?.publicTransport != null
+            ? user_inst.max_distances.publicTransport -
+              Math.min.apply(
+                user_inst.max_distances.publicTransport,
+                loc.publicTransport.map(
+                  (
+                    val: listing_locationFactor_microLocation_publicTransport,
+                    _index: number
+                  ) => {
+                    return val.distance;
+                  }
+                )
+              )
+            : 0,
       };
       element.customMetric = calculateCustomMetric(
         user_inst.weights,
@@ -165,11 +176,8 @@ const calculateCustomMetric = (
 
 const getImmoLists = async (
   search_around: string,
-  obj_type: workspace,
-  city: string,
-  sqm_min: number,
-  sqm_max: number,
-  max_val: number
+  max_val: number,
+  user: user
 ) => {
   const type = user.obj_type == workspace.house ? "HOUSEBUY" : "APARTMENTBUY";
 
@@ -184,7 +192,8 @@ const getImmoLists = async (
 
     const results = 1000;
 
-    const mod_url = `https://api.thinkimmo.com/immo?type=${type}&excludedFields=true&size=${results}&sqmFrom=${sqm_min}&sqmTo=${sqm_max}&pricePerSqmTo=${sqm_max_price}&excludedFields=true&geoSearches=${geoSearch}`;
+    const mod_url = `https://api.thinkimmo.com/immo?type=${type}&size=${results}&sqmFrom=${user.sqm_min}&sqmTo=${user.sqm_max}&pricePerSqmTo=${sqm_max_price}&geoSearches=${geoSearch}&schools=${user.max_distances.school}&kindergarten=${user.max_distances.kindergarden}&supermarkets=${user.max_distances.supermarket}&publicTransport=${user.max_distances.publicTransport}`;
+    //const mod_url = `https://api.thinkimmo.com/immo?type=${type}&excludedFields=true&size=${results}&sqmFrom=${user.sqm_min}&sqmTo=${sqm_max}&pricePerSqmTo=${sqm_max_price}&excludedFields=true&geoSearches=${geoSearch}`;
 
     const response = await fetch(mod_url, requestOptions);
     if (!response.ok) {
