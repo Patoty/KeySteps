@@ -1,9 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 import Image from 'next/image';
+import Form from 'next/form'
 import heat from '../assets/heat.svg';
 import { APIProvider, useMapsLibrary } from '@vis.gl/react-google-maps';
 
 import { useEffect, useRef, useState } from 'react';
+import { getListings } from '../immoAction';
+import { user, workspace } from '../actionDefinition';
 
 
 export default function FormWrapper() {
@@ -12,6 +16,55 @@ export default function FormWrapper() {
         useState<google.maps.places.PlaceResult | null>(null);
     const [selectedWorkplace, setSelectedWorkplace] =
         useState<google.maps.places.PlaceResult | null>(null);
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const form = e.target as HTMLFormElement;
+        const formData = new FormData(form);
+
+        // Convert FormData to a plain object or key-value pairs
+        const formObject: Record<string, string> = {};
+        formData.forEach((value, key) => {
+            formObject[key] = value as string;
+        });
+
+        console.log(formObject);
+        const workplaceLoc = selectedWorkplace?.geometry?.location?.toJSON();
+
+        const data: user = {
+            sqm_min: parseInt(formObject.sqmin),
+            sqm_max: parseInt(formObject.sqmax),
+            obj_type: formObject.category == "apartment" ? workspace.apartment : workspace.house,
+
+            workplace: formObject.workplace,
+            workplace_lat: 69,
+            workplace_lon: 69,
+
+            self_capital: 50000,
+            income: 5000,
+            state: "Bayern", //everything else is disgusting (nrw is okay because leonardo might live there)
+            payment_rate: 2000,
+
+            weights: {
+                school: 5,
+                workplace: 10,
+                kindergarden: 0,
+                supermarket: 7,
+                publicTransport: 0,
+            },
+
+            max_distances: {
+                school: 10000,
+                workplace: 5000,
+                kindergarden: 0,
+                publicTransport: 1000,
+                supermarket: 1000,
+            },
+
+            city: "Garching bei München",
+        };
+    }
     return (
         <APIProvider apiKey={GOOGLE_MAPS_API_KEY || ''} version="weekly" libraries={['places']}
         >
@@ -19,7 +72,7 @@ export default function FormWrapper() {
                 <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
                     <Image src={heat} alt="Heat" className='mx-auto' />
                     <h2 className="mt-4 text-xl font-semibold text-gray-900 sm:text-4xl md:mt-6" >Choosing The Right Place</h2 >
-                    <form action="#" className="w-full space-y-6 lg:space-y-8">
+                    <Form onSubmit={handleSubmit} action={""} className="w-full space-y-6 lg:space-y-8">
                         {/* TODO Stepper functionality for form process */}
                         {/* <div className="space-y-6 sm:space-y-8">
                             <ol className="flex flex-col gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800  md:flex-row md:items-center lg:gap-6">
@@ -80,7 +133,7 @@ export default function FormWrapper() {
                                             <div className='grid grid-rows-auto grid-cols-2 gap-x-4 w-max'>
                                                 <label htmlFor="category" className="text-sm mb-2 font-medium text-gray-900">What home type are we favoring?</label>
                                                 <label htmlFor="sqmin" className="text-sm mb-2 font-medium text-gray-900">Square meter range</label>
-                                                <select id="category" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                                                <select id="category" name="category" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500">
                                                     <option>Select a category</option>
                                                     <option value="house">House</option>
                                                     <option value="apartment">Apartment</option>
@@ -144,16 +197,16 @@ export default function FormWrapper() {
                                         <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
                                             <div className='grid grid-rows-auto grid-cols-5 gap-x-4 w-max'>
                                                 <label htmlFor="school" className="text-sm mb-2 font-medium text-gray-900">School</label>
-                                                <label htmlFor="workplace" className="text-sm mb-2 font-medium text-gray-900">Workplace</label>
+                                                <label htmlFor="workplaceDis" className="text-sm mb-2 font-medium text-gray-900">Workplace</label>
                                                 <label htmlFor="kindergarden" className="text-sm mb-2 font-medium text-gray-900">Kindergarden</label>
                                                 <label htmlFor="supermarket" className="text-sm mb-2 font-medium text-gray-900">Supermarket</label>
                                                 <label htmlFor="income" className="text-sm mb-2 font-medium text-gray-900">Income</label>
-                                                
+
                                                 <div className='flex gap-x-4'>
                                                     <input placeholder='0' type='number' max={9998} min={0} name="school" id="school" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
                                                 </div>
                                                 <div className='flex gap-x-4'>
-                                                    <input placeholder='0' type='number' max={9998} min={0} name="workplace" id="workplace" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                    <input placeholder='0' type='number' max={9998} min={0} name="workplaceDis" id="workplaceDis" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
                                                 </div>
                                                 <div className='flex gap-x-4'>
                                                     <input placeholder='0' type='number' max={9998} min={0} name="kindergarden" id="kindergarden" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
@@ -170,7 +223,7 @@ export default function FormWrapper() {
                                                 <label htmlFor="kindergarden-weight" className="text-sm mb-2 font-medium text-gray-900"></label>
                                                 <label htmlFor="supermarket-weight" className="text-sm mb-2 font-medium text-gray-900"></label>
                                                 <label htmlFor="income-weight" className="text-sm mb-2 font-medium text-gray-900"></label>
-                                                
+
                                                 <div className='flex gap-x-4'>
                                                     <input placeholder='0' type='number' max={5} min={0} name="school-weight" id="school-weight" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
                                                 </div>
@@ -194,10 +247,10 @@ export default function FormWrapper() {
                             </div>
 
                             <div className="gap-4 sm:flex sm:items-center sm:justify-between">
-                                <button type="button" className="w-full rounded-lg  border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 sm:w-auto">Cancel</button>
+                                <button type="submit" className="w-full rounded-lg  border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 sm:w-auto">See Listings</button>
                             </div>
                         </div>
-                    </form>
+                    </Form>
                 </div >
             </section >
         </APIProvider>
