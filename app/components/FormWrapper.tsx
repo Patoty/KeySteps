@@ -115,6 +115,81 @@ export default function FormWrapper() {
                                         </div>
                                     </div>
                                 </div>
+
+                                <div><h3 className="text-2xl font-semibold text-gray-900 mb-2">Financial Situation (€)</h3>
+                                    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm p-4">
+                                        <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
+                                            <div className='grid grid-rows-auto grid-cols-3 gap-x-4 w-max'>
+                                                <label htmlFor="capital" className="text-sm mb-2 font-medium text-gray-900">Self Capital</label>
+                                                <label htmlFor="income" className="text-sm mb-2 font-medium text-gray-900">Income</label>
+                                                <label htmlFor="rate" className="text-sm mb-2 font-medium text-gray-900">Payment Rate</label>
+
+                                                <div className='flex gap-x-4'>
+                                                    <input placeholder='0' type='number' max={99999998} min={0} name="capital" id="capital" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                </div>
+                                                <div className='flex gap-x-4'>
+                                                    <input placeholder='0' type='number' max={99999998} min={0} name="income" id="income" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                </div>
+                                                <div className='flex gap-x-4'>
+                                                    <input placeholder='0' type='number' max={99999998} min={0} name="rate" id="rate" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div><h3 className="text-2xl font-semibold text-gray-900 mb-2">Distance to next (km)</h3>
+                                    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm p-4">
+                                        <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
+                                            <div className='grid grid-rows-auto grid-cols-5 gap-x-4 w-max'>
+                                                <label htmlFor="school" className="text-sm mb-2 font-medium text-gray-900">School</label>
+                                                <label htmlFor="workplace" className="text-sm mb-2 font-medium text-gray-900">Workplace</label>
+                                                <label htmlFor="kindergarden" className="text-sm mb-2 font-medium text-gray-900">Kindergarden</label>
+                                                <label htmlFor="supermarket" className="text-sm mb-2 font-medium text-gray-900">Supermarket</label>
+                                                <label htmlFor="income" className="text-sm mb-2 font-medium text-gray-900">Income</label>
+                                                
+                                                <div className='flex gap-x-4'>
+                                                    <input placeholder='0' type='number' max={9998} min={0} name="school" id="school" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                </div>
+                                                <div className='flex gap-x-4'>
+                                                    <input placeholder='0' type='number' max={9998} min={0} name="workplace" id="workplace" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                </div>
+                                                <div className='flex gap-x-4'>
+                                                    <input placeholder='0' type='number' max={9998} min={0} name="kindergarden" id="kindergarden" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                </div>
+                                                <div className='flex gap-x-4'>
+                                                    <input placeholder='0' type='number' max={9998} min={0} name="supermarket" id="supermarket" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                </div>
+                                                <div className='flex gap-x-4'>
+                                                    <input placeholder='0' type='number' max={9998} min={0} name="income" id="income" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                </div>
+
+                                                <label htmlFor="school-weight" className="text-sm mb-2 font-medium text-gray-900">and weights</label>
+                                                <label htmlFor="workplace-weight" className="text-sm mb-2 font-medium text-gray-900"></label>
+                                                <label htmlFor="kindergarden-weight" className="text-sm mb-2 font-medium text-gray-900"></label>
+                                                <label htmlFor="supermarket-weight" className="text-sm mb-2 font-medium text-gray-900"></label>
+                                                <label htmlFor="income-weight" className="text-sm mb-2 font-medium text-gray-900"></label>
+                                                
+                                                <div className='flex gap-x-4'>
+                                                    <input placeholder='0' type='number' max={5} min={0} name="school-weight" id="school-weight" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                </div>
+                                                <div className='flex gap-x-4'>
+                                                    <input placeholder='0' type='number' max={5} min={0} name="workplace-weight" id="workplace-weight" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                </div>
+                                                <div className='flex gap-x-4'>
+                                                    <input placeholder='0' type='number' max={5} min={0} name="kindergarden-weight" id="kindergarden-weight" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                </div>
+                                                <div className='flex gap-x-4'>
+                                                    <input placeholder='0' type='number' max={5} min={0} name="supermarket-weight" id="supermarket-weight" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                </div>
+                                                <div className='flex gap-x-4'>
+                                                    <input placeholder='0' type='number' max={5} min={0} name="income-weight" id="income-weight" required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="gap-4 sm:flex sm:items-center sm:justify-between">
