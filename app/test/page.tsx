@@ -4,100 +4,100 @@ import { argv0 } from "process";
 import { useEffect } from "react";
 
 export default function Home() {
-	useEffect(() => {
-		const user_inst: user = {
+  useEffect(() => {
+    const user_inst: user = {
 
-			sqm_min: 60,
-			sqm_max: 40,
-			obj_type: workspace.apartment, //or "house"
+      sqm_min: 60,
+      sqm_max: 40,
+      obj_type: workspace.apartment, //or "house"
 
-			workplace: "Boltzmannstraße 3 85748 Garching bei München",
-			workplace_lat: 69,
-			workplace_lon: 69,
+      workplace: "Boltzmannstraße 3 85748 Garching bei München",
+      workplace_lat: 69,
+      workplace_lon: 69,
 
-			self_capital: 50000,
-			income: 5000,
-			state: "Bayern", //everything else is disgusting (nrw is okay because leonardo might live there)
-			payment_rate: 2000,
+      self_capital: 50000,
+      income: 5000,
+      state: "Bayern", //everything else is disgusting (nrw is okay because leonardo might live there)
+      payment_rate: 2000,
 
-			weights: {
-				school: 5,
-				workplace: 10,
-				kindergarden: 0,
-				supermarket: 7,
-				publicTransport: 0,
-			},
+      weights: {
+        school: 5,
+        workplace: 10,
+        kindergarden: 0,
+        supermarket: 7,
+        publicTransport: 0,
+      },
 
-			max_distances: {
-				school: 10000,
-				workplace: 5000,
-				kindergarden: 0,
-				publicTransport: 1000,
-				supermarket: 1000,
-			},
+      max_distances: {
+        school: 10000,
+        workplace: 5000,
+        kindergarden: 0,
+        publicTransport: 1000,
+        supermarket: 1000,
+      },
 
-			city: "Garching bei München",
-    	};
+      city: "Garching bei München",
+    };
 
 
-	async function fetchData() {
-		const max_val: number = await aggCosts(
-			user_inst.self_capital, 
-			user_inst.income, 
-			user_inst.payment_rate, 
-			user_inst.state
-		);
+    async function fetchData() {
+      const max_val: number = await aggCosts(
+        user_inst.self_capital,
+        user_inst.income,
+        user_inst.payment_rate,
+        user_inst.state
+      );
 
-		let immoList: listing[] = await getImmoLists(
-			user_inst.workplace,
-			user_inst.obj_type,
-			user_inst.city,
-			user_inst.sqm_min,
-			user_inst.sqm_max,
-			max_val,
-		);
+      let immoList: listing[] = await getImmoLists(
+        user_inst.workplace,
+        user_inst.obj_type,
+        user_inst.city,
+        user_inst.sqm_min,
+        user_inst.sqm_max,
+        max_val,
+      );
 
-		if (immoList) {
-			immoList.forEach((element:listing, _index: number) => {
-				const lat = user_inst.workplace_lat - element.address.lat;
-				const lon = user_inst.workplace_lon - element.address.lon;
-				const squared_sum = Math.pow(lat, 2) + Math.pow(lon, 2);
+      if (immoList) {
+        immoList.forEach((element: listing, _index: number) => {
+          const lat = user_inst.workplace_lat - element.address.lat;
+          const lon = user_inst.workplace_lon - element.address.lon;
+          const squared_sum = Math.pow(lat, 2) + Math.pow(lon, 2);
 
-				element.workplaceDistance = Math.sqrt(squared_sum);
+          element.workplaceDistance = Math.sqrt(squared_sum);
 
-				const loc = element.locationFactor.microLocation;
-				const user_metric: weightOrMetric = {
-					workplace: user_inst.max_distances.workplace - element.workplaceDistance,
-					school: user_inst.max_distances.school - Math.min.apply(user_inst.max_distances.school, loc.schools.map((val: listing_locationFactor_microLocation_schools,_index:number) => {
-						return val.distance;
-					})),
-					kindergarden: user_inst.max_distances.kindergarden - Math.min.apply(user_inst.max_distances.kindergarden, loc.kindergarten.map((
-						val: listing_locationFactor_microLocation_kindergarten, _index: number
-					) => {
-						return val.distance;
-					})),
-					supermarket: user_inst.max_distances.supermarket - Math.min.apply(user_inst.max_distances.supermarket, loc.supermarkets.map((
-						val: listing_locationFactor_microLocation_supermarkets, _index: number
-					) => {
-						return val.distance;
-					})),
-					publicTransport: user_inst.max_distances.publicTransport - Math.min.apply(user_inst.max_distances.publicTransport, loc.publicTransport.map((
-						val: listing_locationFactor_microLocation_publicTransport, _index: number
-					) => {
-						return val.distance;
-					})),
-				}
-				element.customMetric = calculateCustomMetric(user_inst.weights, user_metric); 
-			});
-			
-		}
-		else {
-			console.log("no data from immo");
-			return null;
-		}
-	}
+          const loc = element.locationFactor.microLocation;
+          const user_metric: weightOrMetric = {
+            workplace: user_inst.max_distances.workplace - element.workplaceDistance,
+            school: user_inst.max_distances.school - Math.min.apply(user_inst.max_distances.school, loc.schools.map((val: listing_locationFactor_microLocation_schools, _index: number) => {
+              return val.distance;
+            })),
+            kindergarden: user_inst.max_distances.kindergarden - Math.min.apply(user_inst.max_distances.kindergarden, loc.kindergarten.map((
+              val: listing_locationFactor_microLocation_kindergarten, _index: number
+            ) => {
+              return val.distance;
+            })),
+            supermarket: user_inst.max_distances.supermarket - Math.min.apply(user_inst.max_distances.supermarket, loc.supermarkets.map((
+              val: listing_locationFactor_microLocation_supermarkets, _index: number
+            ) => {
+              return val.distance;
+            })),
+            publicTransport: user_inst.max_distances.publicTransport - Math.min.apply(user_inst.max_distances.publicTransport, loc.publicTransport.map((
+              val: listing_locationFactor_microLocation_publicTransport, _index: number
+            ) => {
+              return val.distance;
+            })),
+          }
+          element.customMetric = calculateCustomMetric(user_inst.weights, user_metric);
+        });
 
-	fetchData();
+      }
+      else {
+        console.log("no data from immo");
+        return null;
+      }
+    }
+
+    fetchData();
 
   }, []);
 
@@ -164,24 +164,24 @@ export default function Home() {
     return budget;
   };
 
-  	const calculateCustomMetric = (user_weights: weightOrMetric, user_metric: weightOrMetric) => {
-		let weight = 0;
-		let metric = 0;
+  const calculateCustomMetric = (user_weights: weightOrMetric, user_metric: weightOrMetric) => {
+    let weight = 0;
+    let metric = 0;
 
-		metric += user_weights.workplace * user_metric.workplace;
-		metric += user_weights.supermarket * user_metric.supermarket;
-		metric += user_weights.kindergarden * user_metric.kindergarden;
-		metric += user_weights.school * user_metric.school;
-		metric += user_weights.publicTransport * user_metric.publicTransport;
+    metric += user_weights.workplace * user_metric.workplace;
+    metric += user_weights.supermarket * user_metric.supermarket;
+    metric += user_weights.kindergarden * user_metric.kindergarden;
+    metric += user_weights.school * user_metric.school;
+    metric += user_weights.publicTransport * user_metric.publicTransport;
 
-		weight += user_weights.workplace;
-		weight += user_weights.supermarket;
-		weight += user_weights.kindergarden;
-		weight += user_weights.school;
-		weight += user_weights.publicTransport;
+    weight += user_weights.workplace;
+    weight += user_weights.supermarket;
+    weight += user_weights.kindergarden;
+    weight += user_weights.school;
+    weight += user_weights.publicTransport;
 
-		return weight ? metric/weight : metric;
-	}
+    return weight ? metric / weight : metric;
+  }
   const getImmoLists = async (
     search_around: string,
     obj_type: workspace,
@@ -229,33 +229,33 @@ export default function Home() {
     apartment,
   }
 
-	type user = {
-		//children_count: 0,
+  type user = {
+    //children_count: 0,
 
-		sqm_min: number,
-		sqm_max: number,
-		obj_type: workspace, //or "house"
+    sqm_min: number,
+    sqm_max: number,
+    obj_type: workspace, //or "house"
 
-		workplace: string,
-		workplace_lat: number,
-		workplace_lon: number,
-		city: string,
+    workplace: string,
+    workplace_lat: number,
+    workplace_lon: number,
+    city: string,
 
-		self_capital: number,
-		income: number,
-		state: string, //everything else is disgusting (nrw is okay because leonardo might live there)
-		payment_rate: number,
-		weights: weightOrMetric,
-		max_distances: weightOrMetric,
-	};
+    self_capital: number,
+    income: number,
+    state: string, //everything else is disgusting (nrw is okay because leonardo might live there)
+    payment_rate: number,
+    weights: weightOrMetric,
+    max_distances: weightOrMetric,
+  };
 
-	type weightOrMetric = {
-		workplace: number,
-		school: number,
-		publicTransport: number,
-		kindergarden: number, 
-		supermarket: number,
-	}
+  type weightOrMetric = {
+    workplace: number,
+    school: number,
+    publicTransport: number,
+    kindergarden: number,
+    supermarket: number,
+  }
 
   type listing_address = {
     "ISO_3166-1_alpha-2": string;
@@ -449,7 +449,7 @@ export default function Home() {
     foreClosure: boolean;
     locationFactor: listing_locationFactor;
     grossReturn: number;
-    grossReturnCurrent?: number; 
+    grossReturnCurrent?: number;
     constructionYear?: number,
     condition?: string,
     lastRefurbishment?: string,
@@ -466,7 +466,7 @@ export default function Home() {
     rooms?: number,
     privateOffer?: boolean,
     aggregations?: listing_aggregations,
-    livingUnits?: number, 
+    livingUnits?: number,
     commercialUnits?: number,
     leasehold?: boolean,
     priceInMarket: number,
@@ -484,105 +484,9 @@ export default function Home() {
     cashFlow?: number,
     ownCapitalReturn?: number,
     cashFlowPerLivingUnit: number,
-	workplaceDistance?: number,
-	customMetric?: number,
+    workplaceDistance?: number,
+    customMetric?: number,
   };
 
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:const(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+  return (<></>);
 }

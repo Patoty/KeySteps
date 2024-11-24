@@ -95,7 +95,8 @@ export default function FormWrapper() {
                                     </div>
                                 </div>
 
-                                <div><h3 className="text-2xl font-semibold text-gray-900 mb-2">Preferences</h3>
+                                <div>
+                                    <h3 className="text-2xl font-semibold text-gray-900 mb-2">Preferences</h3>
                                     <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm p-4">
                                         <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
                                             <div className="sm:col-span-2">
