@@ -15,40 +15,40 @@ import {
 } from "./actionDefinition";
 
 // DUMMY DATA
-const user_inst: user = {
-  sqm_min: 60,
-  sqm_max: 40,
-  obj_type: workspace.apartment, //or "house"
+// const user_inst: user = {
+//   sqm_min: 60,
+//   sqm_max: 40,
+//   obj_type: workspace.apartment, //or "house"
 
-  workplace: "Boltzmannstraße 3 85748 Garching bei München",
-  workplace_lat: 69,
-  workplace_lon: 69,
+//   workplace: "Boltzmannstraße 3 85748 Garching bei München",
+//   workplace_lat: 69,
+//   workplace_lon: 69,
 
-  self_capital: 50000,
-  income: 5000,
-  state: "Bayern", //everything else is disgusting (nrw is okay because leonardo might live there)
-  payment_rate: 2000,
+//   self_capital: 50000,
+//   income: 5000,
+//   state: "Bayern", //everything else is disgusting (nrw is okay because leonardo might live there)
+//   payment_rate: 2000,
 
-  weights: {
-    school: 5,
-    workplace: 10,
-    kindergarden: 0,
-    supermarket: 7,
-    publicTransport: 0,
-  },
+//   weights: {
+//     school: 5,
+//     workplace: 10,
+//     kindergarden: 0,
+//     supermarket: 7,
+//     publicTransport: 0,
+//   },
 
-  max_distances: {
-    school: 10000,
-    workplace: 5000,
-    kindergarden: 0,
-    publicTransport: 1000,
-    supermarket: 1000,
-  },
+//   max_distances: {
+//     school: 10000,
+//     workplace: 5000,
+//     kindergarden: 0,
+//     publicTransport: 1000,
+//     supermarket: 1000,
+//   },
 
-  city: "Garching bei München",
-};
+//   city: "Garching bei München",
+// };
 
-export async function getListings(formData: FormData) {
+export async function getListings(user_inst: user) {
   const max_val: number = await getAggCost(
     user_inst.self_capital,
     user_inst.income,

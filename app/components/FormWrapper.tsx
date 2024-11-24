@@ -10,14 +10,14 @@ import { getListings } from '../immoAction';
 import { user, workspace } from '../actionDefinition';
 
 
-export default function FormWrapper() {
+export default function FormWrapper({ initData }) {
     const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_API;
     const [selectedRegion, setSelectedRegion] =
         useState<google.maps.places.PlaceResult | null>(null);
     const [selectedWorkplace, setSelectedWorkplace] =
         useState<google.maps.places.PlaceResult | null>(null);
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const form = e.target as HTMLFormElement;
@@ -28,10 +28,7 @@ export default function FormWrapper() {
         formData.forEach((value, key) => {
             formObject[key] = value as string;
         });
-
-        console.log(formObject);
         const workplaceLoc = selectedWorkplace?.geometry?.location?.toJSON();
-        console.log(workplaceLoc);
 
         const data: user = {
             sqm_min: parseInt(formObject.sqmin),
@@ -39,8 +36,8 @@ export default function FormWrapper() {
             obj_type: formObject.category == "apartment" ? workspace.apartment : workspace.house,
 
             workplace: formObject.workplace,
-            workplace_lat: workplaceLoc.lat,
-            workplace_lon: workplaceLoc.lon,
+            workplace_lat: +workplaceLoc?.lat,
+            workplace_lon: +workplaceLoc?.lon,
 
             self_capital: +formObject.capital,
             income: +formObject.income,
@@ -65,6 +62,9 @@ export default function FormWrapper() {
 
             city: "Garching bei München",
         };
+
+        const res = await getListings(data);
+        initData(res);
     }
     return (
         <APIProvider apiKey={GOOGLE_MAPS_API_KEY || ''} version="weekly" libraries={['places']}
