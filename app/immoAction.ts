@@ -171,11 +171,11 @@ const getImmoLists = async (
   sqm_max: number,
   max_val: number
 ) => {
-  const type = obj_type == workspace.house ? "HOUSEBUY" : "APARTMENTBUY";
+  const type = user.obj_type == workspace.house ? "HOUSEBUY" : "APARTMENTBUY";
 
-  const sqm_max_price = max_val / sqm_max;
+  const sqm_max_price = max_val / user.sqm_max;
 
-  const geoSearch = `[{"geoSearchType":"city","region":"Bayern","geoSearchQuery":"${city}"}]`;
+  const geoSearch = `[{"geoSearchType":"city","region":"${user.state}","geoSearchQuery":"${user.city}"}]`;
 
   try {
     const requestOptions = {

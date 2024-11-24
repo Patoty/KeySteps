@@ -7,8 +7,8 @@ export default function Home() {
   useEffect(() => {
     const user_inst: user = {
 
-      sqm_min: 60,
-      sqm_max: 40,
+      sqm_min: 40,
+      sqm_max: 60,
       obj_type: workspace.apartment, //or "house"
 
       workplace: "Boltzmannstraße 3 85748 Garching bei München",
@@ -16,9 +16,9 @@ export default function Home() {
       workplace_lon: 69,
 
       self_capital: 50000,
-      income: 5000,
+      income: 500000,
       state: "Bayern", //everything else is disgusting (nrw is okay because leonardo might live there)
-      payment_rate: 2000,
+      payment_rate: 20000,
 
       weights: {
         school: 5,
@@ -31,12 +31,12 @@ export default function Home() {
       max_distances: {
         school: 10000,
         workplace: 5000,
-        kindergarden: 0,
-        publicTransport: 1000,
-        supermarket: 1000,
+        kindergarden: 9000,
+        publicTransport: 10000,
+        supermarket: 10000,
       },
 
-      city: "Garching bei München",
+      city: "München",
     };
 
 
@@ -55,6 +55,7 @@ export default function Home() {
         user_inst.sqm_min,
         user_inst.sqm_max,
         max_val,
+		user_inst,
       );
 
       if (immoList) {
@@ -65,30 +66,50 @@ export default function Home() {
 
           element.workplaceDistance = Math.sqrt(squared_sum);
 
-          const loc = element.locationFactor.microLocation;
+          const loc = element?.locationFactor?.microLocation;
+		  if (!loc) {
+			  console.log("Loc was null");
+			  return null;
+		  }
           const user_metric: weightOrMetric = {
             workplace: user_inst.max_distances.workplace - element.workplaceDistance,
-            school: user_inst.max_distances.school - Math.min.apply(user_inst.max_distances.school, loc.schools.map((val: listing_locationFactor_microLocation_schools, _index: number) => {
+            school: loc?.schools != null ?
+				user_inst.max_distances.school - Math.min.apply(user_inst.max_distances.school, loc.schools.map((val: listing_locationFactor_microLocation_schools, _index: number) => {
               return val.distance;
-            })),
-            kindergarden: user_inst.max_distances.kindergarden - Math.min.apply(user_inst.max_distances.kindergarden, loc.kindergarten.map((
+            })) : 0,
+            kindergarden: loc?.kindergarten != null ?
+				user_inst.max_distances.kindergarden - Math.min.apply(user_inst.max_distances.kindergarden, loc.kindergarten.map((
               val: listing_locationFactor_microLocation_kindergarten, _index: number
             ) => {
               return val.distance;
-            })),
-            supermarket: user_inst.max_distances.supermarket - Math.min.apply(user_inst.max_distances.supermarket, loc.supermarkets.map((
+            })) : 0,
+            supermarket: loc?.supermarkets != null ?
+				user_inst.max_distances.supermarket - Math.min.apply(user_inst.max_distances.supermarket, loc.supermarkets.map((
               val: listing_locationFactor_microLocation_supermarkets, _index: number
             ) => {
               return val.distance;
-            })),
-            publicTransport: user_inst.max_distances.publicTransport - Math.min.apply(user_inst.max_distances.publicTransport, loc.publicTransport.map((
+            })) : 0,
+            publicTransport: loc?.publicTransport != null ?
+				user_inst.max_distances.publicTransport - Math.min.apply(user_inst.max_distances.publicTransport, loc.publicTransport.map((
               val: listing_locationFactor_microLocation_publicTransport, _index: number
             ) => {
               return val.distance;
-            })),
+            })) : 0,
           }
+		  console.log("set a custom metric");
           element.customMetric = calculateCustomMetric(user_inst.weights, user_metric);
         });
+
+		const avg_lat = immoList.map((val: listing, _index: number) => {
+			return val.location.lat;
+		}).reduce((a, b) => a + b, 0) / immoList.length || 0;
+		const avg_lon = immoList.map((val: listing, _index: number) => {
+			return val.location.lon; 
+		}).reduce((a, b) => a + b, 0) / immoList.length || 0;
+	
+		console.log("Custom List with metrics:");
+		console.log(immoList);
+
 
       }
       else {
@@ -189,12 +210,13 @@ export default function Home() {
     sqm_min: number,
     sqm_max: number,
     max_val: number,
+	user: user,
   ) => {
-    const type = obj_type == workspace.house ? "HOUSEBUY" : "APARTMENTBUY";
+    const type = user.obj_type == workspace.house ? "HOUSEBUY" : "APARTMENTBUY";
 
     const sqm_max_price = max_val / sqm_max;
 
-    const geoSearch = `[{"geoSearchType":"city","region":"Bayern","geoSearchQuery":"${city}"}]`;
+    const geoSearch = `[{"geoSearchType":"city","region":"${user.state}","geoSearchQuery":"${user.city}"}]`;
 
     try {
       const requestOptions = {
@@ -203,7 +225,9 @@ export default function Home() {
 
       const results = 1000;
 
-      let mod_url = `https://api.thinkimmo.com/immo?type=${type}&excludedFields=true&size=${results}&sqmFrom=${sqm_min}&sqmTo=${sqm_max}&pricePerSqmTo=${sqm_max_price}&excludedFields=true&geoSearches=${geoSearch}`;
+      let mod_url = `https://api.thinkimmo.com/immo?type=${type}&size=${results}&sqmFrom=${sqm_min}&sqmTo=${sqm_max}&pricePerSqmTo=${sqm_max_price}&geoSearches=${geoSearch}&schools=${user.max_distances.school}&kindergarten=${user.max_distances.kindergarden}&supermarkets=${user.max_distances.supermarket}&publicTransport=${user.max_distances.publicTransport}`;
+	  
+	  //let agg_url = `https://api.thinkimmo.com/immo/rangeAggregation?fields=pricePerSqm;buyingPrice;grossReturn&active=true&type=${type}&from=0&size=${results}&schools=${user.max_distances.school}&kindergarten=${user.max_distances.kindergarden}&supermarkets=${user.max_distances.supermarket}&publicTransport=${user.max_distances.publicTransport}&allowUnkown=false&favorite=false&excludedFields=true&geoSearches=${geoSearch}&sqmFrom=${sqm_min}&sqmTo=${sqm_max}&pricePerSqmTo=${sqm_max_price}`
 
       const response = await fetch(mod_url, requestOptions);
       if (!response.ok) {
@@ -343,10 +367,10 @@ export default function Home() {
   };
 
   type listing_locationFactor_microLocation = {
-    schools: listing_locationFactor_microLocation_schools[];
-    supermarkets: listing_locationFactor_microLocation_supermarkets[];
-    kindergarten: listing_locationFactor_microLocation_kindergarten[];
-    publicTransport: listing_locationFactor_microLocation_publicTransport[];
+    schools?: listing_locationFactor_microLocation_schools[];
+    supermarkets?: listing_locationFactor_microLocation_supermarkets[];
+    kindergarten?: listing_locationFactor_microLocation_kindergarten[];
+    publicTransport?: listing_locationFactor_microLocation_publicTransport[];
   };
 
   type listing_locationFactor_unemploymentRateOrPopulationMeta_historicValues =
@@ -369,7 +393,7 @@ export default function Home() {
     universityScore: number;
     populationScore: number;
     populationTrendScore: number;
-    microLocation: listing_locationFactor_microLocation;
+    microLocation?: listing_locationFactor_microLocation;
     unemploymentRateMeta: listing_locationFactor_unemploymentRateOrPopulationMeta;
     populationMeta: listing_locationFactor_unemploymentRateOrPopulationMeta;
   };
@@ -447,7 +471,7 @@ export default function Home() {
     energyCertificate: boolean;
     region: string;
     foreClosure: boolean;
-    locationFactor: listing_locationFactor;
+    locationFactor?: listing_locationFactor;
     grossReturn: number;
     grossReturnCurrent?: number;
     constructionYear?: number,
