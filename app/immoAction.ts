@@ -163,6 +163,17 @@ const calculateCustomMetric = (
   return weight ? metric / weight : metric;
 };
 
+const getAvgCoordinatesFromImmoList = (immoList: listing[]) => {
+	const avg_lat = immoList.map((val: listing, _index: number) => {
+		return val.location.lat;
+	}).reduce((a, b) => a + b, 0) / immoList.length || 0;
+
+	const avg_lon = immoList.map((val: listing, _index: number) => {
+		return val.location.lon; 
+	}).reduce((a, b) => a + b, 0) / immoList.length || 0;
+
+	return {avg_lat, avg_lon};
+}
 const getImmoLists = async (
   search_around: string,
   max_val: number,

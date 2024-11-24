@@ -99,6 +99,13 @@ export default function Home() {
 		  console.log("set a custom metric");
           element.customMetric = calculateCustomMetric(user_inst.weights, user_metric);
         });
+
+		const avg_lat = immoList.map((val: listing, _index: number) => {
+			return val.location.lat;
+		}).reduce((a, b) => a + b, 0) / immoList.length || 0;
+		const avg_lon = immoList.map((val: listing, _index: number) => {
+			return val.location.lon; 
+		}).reduce((a, b) => a + b, 0) / immoList.length || 0;
 	
 		console.log("Custom List with metrics:");
 		console.log(immoList);
