@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Form from 'next/form'
 import heat from '../assets/heat.svg';
 import { APIProvider, useMapsLibrary } from '@vis.gl/react-google-maps';
+import Link from "next/link";
 
 import { useEffect, useRef, useState } from 'react';
 import { getListings } from '../immoAction';
@@ -241,9 +242,9 @@ Afterwards decide in what radius you need certain facilities like schools, super
                                 </div>
                             </div>
 
-                            <div className="gap-4 sm:flex sm:items-center sm:justify-between">
-                                <button type="submit" className="w-full rounded-lg  border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 sm:w-auto">See Listings</button>
-                            </div>
+                            <Link href={"/discover/listings"} className="bg-primary mt-3 px-20 hover:bg-primary-hover text-white font-bold py-2 px-4 border-b-4 border-primary-ripple hover:border-primary rounded">
+                              Show regions.
+                            </Link>
                         </div>
                     </Form>
                 </div >

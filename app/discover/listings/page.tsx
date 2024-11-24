@@ -1,5 +1,6 @@
 "use client"
 import { GoogleMap, LoadScript, Marker, Circle } from '@react-google-maps/api';
+import Link from "next/link";
 
 export default function Listings() {
     const INITIAL_CENTER = { lat: 48.138931, lng: 11.577488 };
@@ -156,6 +157,9 @@ export default function Listings() {
                         />))}
                     </GoogleMap></LoadScript>
             </div>
+            <Link href={"/what-next"} className="bg-primary mt-3 px-20 hover:bg-primary-hover text-white font-bold py-2 px-4 border-b-4 border-primary-ripple hover:border-primary rounded">
+              Select region.
+            </Link>
         </div >
     )
 }
