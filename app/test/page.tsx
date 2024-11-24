@@ -1,19 +1,22 @@
 "use client";
 import Image from "next/image";
+import { argv0 } from "process";
 import { useEffect } from "react";
 
 export default function Home() {
   useEffect(() => {
-    const pablo: user = {
-      max_spmkt_dist: 10,
-      max_pt_dist: 10,
+    const user_inst: user = {
+      max_spmkt_dist: 1000,
+      max_pt_dist: 1000,
       //children_count: 0,
-      max_school_dist: 0,
+      max_school_dist: 10000,
+	  max_kindergarden_dist: 0,
 
       sqm: 50,
       obj_type: workspace.apartment, //or "house"
 
       workplace: "Boltzmannstraße 3 85748 Garching bei München",
+	  max_workplace_dist: 5000,
 
       self_capital: 50000,
       income: 5000,
@@ -21,20 +24,85 @@ export default function Home() {
       payment_rate: 2000,
     };
 
-    //const max_val: number = aggCosts(pablo.self_capital, pablo.income, pablo.payment_rate, pablo.state);
-    const max_val = 2000000;
+	const school_weight = 5;
+	const workplace_weight = 10;
+	const kindergarden_weight = 0;
+	const supermarket_weight = 7;
+	const pt_weight = 0;
+
+	const user_weights: weightOrMetric = {
+		school: 5,
+		workplace: 10,
+		kindergarden: 0,
+		supermarket: 7,
+		publicTransport: 0,
+	}
+
+
     const city = "Garching bei München";
 
-    let immoList = getImmoLists(
-      pablo.workplace,
-      pablo.obj_type,
-      city,
-      pablo.sqm,
-      max_val,
-    );
-    if (immoList == null) {
-      console.log("no data from immo");
-    }
+
+	async function my_main_function() {
+		const max_val: number = await aggCosts(
+			user_inst.self_capital, 
+			user_inst.income, 
+			user_inst.payment_rate, 
+			user_inst.state
+		);
+
+		let immoList: listing[] = await getImmoLists(
+			user_inst.workplace,
+			user_inst.obj_type,
+			city,
+			user_inst.sqm,
+			max_val,
+		);
+
+		if (immoList) {
+			const workplace_lat = 69;
+			const workplace_lon = 69;
+
+			immoList.forEach((element:listing, _index: number) => {
+				const lat = workplace_lat - element.address.lat;
+				const lon = workplace_lon - element.address.lon;
+				const squared_sum = Math.pow(lat, 2) + Math.pow(lon, 2);
+
+				element.workplaceDistance = Math.sqrt(squared_sum);
+
+				const loc = element.locationFactor.microLocation;
+				const user_metric: weightOrMetric = {
+					workplace: user_inst.max_workplace_dist - element.workplaceDistance,
+					school: user_inst.max_school_dist - Math.min.apply(user_inst.max_school_dist, loc.schools.map((val: listing_locationFactor_microLocation_schools,_index:number) => {
+						return val.distance;
+					})),
+					kindergarden: user_inst.max_kindergarden_dist - Math.min.apply(user_inst.max_kindergarden_dist, loc.kindergarten.map((
+						val: listing_locationFactor_microLocation_kindergarten, _index: number
+					) => {
+						return val.distance;
+					})),
+					supermarket: user_inst.max_spmkt_dist - Math.min.apply(user_inst.max_spmkt_dist, loc.supermarkets.map((
+						val: listing_locationFactor_microLocation_supermarkets, _index: number
+					) => {
+						return val.distance;
+					})),
+					publicTransport: user_inst.max_pt_dist - Math.min.apply(user_inst.max_pt_dist, loc.publicTransport.map((
+						val: listing_locationFactor_microLocation_publicTransport, _index: number
+					) => {
+						return val.distance;
+					})),
+				}
+				element.customMetric = calculateCustomMetric(user_weights, user_metric); 
+			});
+			
+		}
+		else {
+			console.log("no data from immo");
+			return null;
+		}
+	}
+
+	my_main_function();
+
   }, []);
 
   const aggCosts = async (
@@ -100,6 +168,24 @@ export default function Home() {
     return budget;
   };
 
+  	const calculateCustomMetric = (user_weights: weightOrMetric, user_metric: weightOrMetric) => {
+		let weight = 0;
+		let metric = 0;
+
+		metric += user_weights.workplace * user_metric.workplace;
+		metric += user_weights.supermarket * user_metric.supermarket;
+		metric += user_weights.kindergarden * user_metric.kindergarden;
+		metric += user_weights.school * user_metric.school;
+		metric += user_weights.publicTransport * user_metric.publicTransport;
+
+		weight += user_weights.workplace;
+		weight += user_weights.supermarket;
+		weight += user_weights.kindergarden;
+		weight += user_weights.school;
+		weight += user_weights.publicTransport;
+
+		return weight ? metric/weight : metric;
+	}
   const getImmoLists = async (
     search_around: string,
     obj_type: workspace,
@@ -156,21 +242,31 @@ export default function Home() {
   }
 
   type user = {
-    max_spmkt_dist: number;
-    max_pt_dist: number;
+    max_spmkt_dist: number,
+    max_pt_dist: number,
     //children_count: 0,
-    max_school_dist: number;
+    max_school_dist: number,
+	max_kindergarden_dist: number,
 
-    sqm: number;
-    obj_type: workspace; //or "house"
+    sqm: number,
+    obj_type: workspace, //or "house"
 
-    workplace: string;
+    workplace: string,
+	max_workplace_dist: number,
 
-    self_capital: number;
-    income: number;
-    state: string; //everything else is disgusting (nrw is okay because leonardo might live there)
-    payment_rate: number;
+    self_capital: number,
+    income: number,
+    state: string, //everything else is disgusting (nrw is okay because leonardo might live there)
+    payment_rate: number,
   };
+
+  type weightOrMetric = {
+	  workplace: number,
+	  school: number,
+	  publicTransport: number,
+	  kindergarden: number, 
+	  supermarket: number,
+  }
 
   type listing_address = {
     "ISO_3166-1_alpha-2": string;
@@ -339,17 +435,17 @@ export default function Home() {
   };
 
   type listing_buyingPriceHistory = {
-    buyingPrice: number;
-    platformName: string;
-    creationDate: string;
+    buyingPrice: number,
+    platformName: string,
+    creationDate: string,
   };
 
   type listing = {
-    id: string;
-    title: string;
-    realtorCompany: string;
-    zip: string;
-    buyingPrice: number;
+    id: string,
+    title: string,
+    realtorCompany: string,
+    zip: string,
+    buyingPrice: number,
     squareMeter: number;
     comission: string; //TODO: find out type
     platforms: listing_platforms[];
@@ -364,41 +460,43 @@ export default function Home() {
     foreClosure: boolean;
     locationFactor: listing_locationFactor;
     grossReturn: number;
-    grossReturnCurrent: null; //TODO: find out type
-    constructionYear: number;
-    condition: string;
-    lastRefurbishment: null; //TODO: find out type
-    numberOfFloors: number;
-    cellar: boolean;
-    numberOfParkingSpaces: number;
-    heatingType: string;
-    active: boolean;
-    rented: boolean;
-    location: listing_location;
-    publishDate: string;
-    buildingType: string;
-    plotArea: number;
-    rooms: number;
-    privateOffer: boolean;
-    aggregations: listing_aggregations;
-    livingUnits: null; //TODO: find out type
-    commercialUnits: number;
-    leasehold: boolean;
-    priceInMarket: number;
-    constructionPhase: string;
-    oAddress: listing_oAddress;
-    originalAddress: listing_originalAddress;
-    images: listing_images[];
-    buyingPriceHistory: listing_buyingPriceHistory[];
-    priceReduced: boolean;
-    priceIncreased: boolean;
-    runningTime: number;
-    lastUpdatedAt: string;
-    favorite: number;
-    favoriteDate: null; //TODO: find out type
-    cashFlow: number;
-    ownCapitalReturn: null; //TODO: find out type
-    cashFlowPerLivingUnit: number;
+    grossReturnCurrent?: number; 
+    constructionYear?: number,
+    condition?: string,
+    lastRefurbishment?: string,
+    numberOfFloors?: number,
+    cellar?: boolean,
+    numberOfParkingSpaces?: number,
+    heatingType?: string,
+    active?: boolean,
+    rented?: boolean,
+    location: listing_location,
+    publishDate?: string,
+    buildingType?: string,
+    plotArea?: number,
+    rooms?: number,
+    privateOffer?: boolean,
+    aggregations?: listing_aggregations,
+    livingUnits?: number, 
+    commercialUnits?: number,
+    leasehold?: boolean,
+    priceInMarket: number,
+    constructionPhase?: string,
+    oAddress?: listing_oAddress,
+    originalAddress?: listing_originalAddress,
+    images?: listing_images[],
+    buyingPriceHistory?: listing_buyingPriceHistory[],
+    priceReduced?: boolean,
+    priceIncreased?: boolean,
+    runningTime?: number,
+    lastUpdatedAt?: string,
+    favorite?: number,
+    favoriteDate?: string,
+    cashFlow?: number,
+    ownCapitalReturn?: number,
+    cashFlowPerLivingUnit: number,
+	workplaceDistance?: number,
+	customMetric?: number,
   };
 
   return (
