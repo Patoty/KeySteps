@@ -18,7 +18,7 @@ export default function Navigation() {
                 </ul></nav>
             </div>
             <div>
-                <button className="bg-primary text-white text-sm font-medium px-4 py-2 rounded-full">Find A Home</button>
+                <Link href={"/discover"} className="bg-primary text-white text-sm font-medium px-4 py-2 rounded-full">Find A Home</Link>
             </div>
         </div>
     )

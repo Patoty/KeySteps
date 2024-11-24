@@ -5,6 +5,7 @@ import pEdwin from '../app/assets/Profile-Edwin.jpg'
 import pLeonardo from '../app/assets/Profile-Leonardo.jpg'
 import pPatrick from '../app/assets/Profile-Patrick.jpg'
 import pTimon from '../app/assets/Profile-Timon.jpg'
+import Link from "next/link";
 
 export default function Home() {
 
@@ -16,9 +17,9 @@ export default function Home() {
             A Home For Your Lifestyle.
           </h2>
           {/*<button className="bg-white mt-3 px-20 hover:bg-primary text-primary hover:text-white font-bold py-2 px-4 border-b-4 border-primary-ripple hover:border-primary rounded">*/}
-          <button className="bg-primary mt-3 px-20 hover:bg-primary-hover text-white font-bold py-2 px-4 border-b-4 border-primary-ripple hover:border-primary rounded">
+          <Link href={"/discover"} className="bg-primary mt-3 px-20 hover:bg-primary-hover text-white font-bold py-2 px-4 border-b-4 border-primary-ripple hover:border-primary rounded">
             Let's find it!
-          </button>
+          </Link>
         </div>
       </div>
       
