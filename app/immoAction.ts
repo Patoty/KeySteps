@@ -16,8 +16,8 @@ import {
 
 // DUMMY DATA
 const user_inst: user = {
-  sqm_min: 60,
-  sqm_max: 40,
+  sqm_min: 40,
+  sqm_max: 60,
   obj_type: workspace.apartment, //or "house"
 
   workplace: "Boltzmannstraße 3 85748 Garching bei München",
@@ -58,11 +58,8 @@ export async function getListings(formData: FormData) {
   // eslint-disable-next-line prefer-const
   let immoList: listing[] = await getImmoLists(
     user_inst.workplace,
-    user_inst.obj_type,
-    user_inst.city,
-    user_inst.sqm_min,
-    user_inst.sqm_max,
-    max_val
+    max_val,
+	user_inst,
   );
 
   if (immoList) {
@@ -73,24 +70,27 @@ export async function getListings(formData: FormData) {
 
       element.workplaceDistance = Math.sqrt(squared_sum);
 
-      const loc = element.locationFactor.microLocation;
+      const loc = element?.locationFactor?.microLocation;
+	  if (!loc) {
+		  return null;
+	  }
       const user_metric: weightOrMetric = {
         workplace:
           user_inst.max_distances.workplace - element.workplaceDistance,
-        school:
+        school: loc?.schools != null ?
           user_inst.max_distances.school -
           Math.min.apply(
-            user_inst.max_distances.school,
-            loc.schools.map(
+            user_inst.max_distances.school, 
+            loc?.schools.map(
               (
                 val: listing_locationFactor_microLocation_schools,
                 _index: number
               ) => {
                 return val.distance;
               }
-            )
-          ),
-        kindergarden:
+            ),
+          ) : 0,
+        kindergarden: loc?.kindergarten != null ?
           user_inst.max_distances.kindergarden -
           Math.min.apply(
             user_inst.max_distances.kindergarden,
@@ -102,8 +102,8 @@ export async function getListings(formData: FormData) {
                 return val.distance;
               }
             )
-          ),
-        supermarket:
+          ) : 0,
+        supermarket: loc?.supermarkets != null ?
           user_inst.max_distances.supermarket -
           Math.min.apply(
             user_inst.max_distances.supermarket,
@@ -115,8 +115,8 @@ export async function getListings(formData: FormData) {
                 return val.distance;
               }
             )
-          ),
-        publicTransport:
+          ) : 0,
+        publicTransport: loc?.publicTransport != null ?
           user_inst.max_distances.publicTransport -
           Math.min.apply(
             user_inst.max_distances.publicTransport,
@@ -128,7 +128,7 @@ export async function getListings(formData: FormData) {
                 return val.distance;
               }
             )
-          ),
+          ) : 0,
       };
       element.customMetric = calculateCustomMetric(
         user_inst.weights,
@@ -165,17 +165,14 @@ const calculateCustomMetric = (
 
 const getImmoLists = async (
   search_around: string,
-  obj_type: workspace,
-  city: string,
-  sqm_min: number,
-  sqm_max: number,
-  max_val: number
+  max_val: number,
+  user: user,
 ) => {
-  const type = obj_type == workspace.house ? "HOUSEBUY" : "APARTMENTBUY";
+  const type = user.obj_type == workspace.house ? "HOUSEBUY" : "APARTMENTBUY";
 
-  const sqm_max_price = max_val / sqm_max;
+  const sqm_max_price = max_val / user.sqm_max;
 
-  const geoSearch = `[{"geoSearchType":"city","region":"Bayern","geoSearchQuery":"${city}"}]`;
+  const geoSearch = `[{"geoSearchType":"city","region":"${user.state}","geoSearchQuery":"${user.city}"}]`;
 
   try {
     const requestOptions = {
@@ -184,7 +181,9 @@ const getImmoLists = async (
 
     const results = 1000;
 
-    const mod_url = `https://api.thinkimmo.com/immo?type=${type}&excludedFields=true&size=${results}&sqmFrom=${sqm_min}&sqmTo=${sqm_max}&pricePerSqmTo=${sqm_max_price}&excludedFields=true&geoSearches=${geoSearch}`;
+      const mod_url = `https://api.thinkimmo.com/immo?type=${type}&size=${results}&sqmFrom=${user.sqm_min}&sqmTo=${user.sqm_max}&pricePerSqmTo=${sqm_max_price}&geoSearches=${geoSearch}&schools=${user.max_distances.school}&kindergarten=${user.max_distances.kindergarden}&supermarkets=${user.max_distances.supermarket}&publicTransport=${user.max_distances.publicTransport}`;
+    //const mod_url = `https://api.thinkimmo.com/immo?type=${type}&excludedFields=true&size=${results}&sqmFrom=${user.sqm_min}&sqmTo=${sqm_max}&pricePerSqmTo=${sqm_max_price}&excludedFields=true&geoSearches=${geoSearch}`;
+
 
     const response = await fetch(mod_url, requestOptions);
     if (!response.ok) {

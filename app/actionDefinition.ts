@@ -108,10 +108,10 @@ type listing_locationFactor_microLocation_publicTransport = {
 };
 
 type listing_locationFactor_microLocation = {
-  schools: listing_locationFactor_microLocation_schools[];
-  supermarkets: listing_locationFactor_microLocation_supermarkets[];
-  kindergarten: listing_locationFactor_microLocation_kindergarten[];
-  publicTransport: listing_locationFactor_microLocation_publicTransport[];
+  schools?: listing_locationFactor_microLocation_schools[];
+  supermarkets?: listing_locationFactor_microLocation_supermarkets[];
+  kindergarten?: listing_locationFactor_microLocation_kindergarten[];
+  publicTransport?: listing_locationFactor_microLocation_publicTransport[];
 };
 
 type listing_locationFactor_unemploymentRateOrPopulationMeta_historicValues = {
@@ -133,7 +133,7 @@ type listing_locationFactor = {
   universityScore: number;
   populationScore: number;
   populationTrendScore: number;
-  microLocation: listing_locationFactor_microLocation;
+  microLocation?: listing_locationFactor_microLocation;
   unemploymentRateMeta: listing_locationFactor_unemploymentRateOrPopulationMeta;
   populationMeta: listing_locationFactor_unemploymentRateOrPopulationMeta;
 };
@@ -211,7 +211,7 @@ type listing = {
   energyCertificate: boolean;
   region: string;
   foreClosure: boolean;
-  locationFactor: listing_locationFactor;
+  locationFactor?: listing_locationFactor;
   grossReturn: number;
   grossReturnCurrent?: number;
   constructionYear?: number;
