@@ -81,7 +81,7 @@ export default function Home() {
                       <h3 className="mb-1 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                           <a href="#">Leonardo Özuluca</a>
                       </h3>
-                      <p>Reverse Engineer</p>
+                      <p>Developer</p>
                       <ul className="flex justify-center mt-4 space-x-4">
                           <li>
                               <a href="https://github.com/Leonoez" className="text-gray-900 hover:text-gray-900 dark:hover:text-white dark:text-gray-300">
