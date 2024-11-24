@@ -13,7 +13,7 @@ export default function Navigation() {
                         <Link href={"/about"} className="hover:text-primary-hover transition-all">ABOUT</Link>
                     </li>
                     <li>
-                        <Link href={"/"} className="hover:text-primary-hover transition-all">IMPRINT</Link>
+                        <Link href={"/what-next"} className="hover:text-primary-hover transition-all">INFOS</Link>
                     </li>
                 </ul></nav>
             </div>

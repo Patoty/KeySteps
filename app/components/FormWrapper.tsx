@@ -116,9 +116,10 @@ export default function FormWrapper() {
 
                         <div className="space-y-2">
                             <div className="my-4 rounded-lg bg-stone-100 p-4 text-sm sm:text-base" role="alert">
-                                <p className="mb-3 font-medium">What you need to know so that the process of sending the product for service goes smoothly:</p>
+                                <p className="mb-3 font-medium">To find some potential places, let's first collect what is important to you:</p>
                                 <ol className="list-outside list-decimal space-y-2 ps-4">
-                                    <li>You can send the products sold by eMAG for service by completing the product repair form. To service the products sold by eMAG Marketplace partners, follow the steps shown in the pages dedicated to them.</li>
+                                    <p>Let's first find out what type of home you are searching for. Then calculate your budget based on the money you have, your income and the monthly payment rate you are willing to pay for the house.
+Afterwards decide in what radius you need certain facilities like schools, supermarkets or a workplace that you provide.</p>
                                 </ol>
                             </div>
 
