@@ -93,13 +93,13 @@ export default function Listings() {
 
     const containerStyle = {
         width: '100%',
-        height: '400px',
+        height: '100%',
     };
 
     return (
         <div className=' mx-auto'>
-            <h1>Our Recommended Areas for XYZ</h1>
-            <div>
+            <h1 className='font-semibold text-4xl mb-4'>Our Recommended Areas for XYZ</h1>
+            <div className='h-[42rem]'>
                 {/* <APIProvider apiKey={GOOGLE_MAPS_API_KEY || ''} version="weekly" libraries={['maps']}>
                     <Map
                         mapId={"103de67284afa7d0"}
@@ -132,6 +132,7 @@ export default function Listings() {
                         mapContainerStyle={containerStyle}
                         center={INITIAL_CENTER}
                         zoom={12}
+
                     >
                         {mockListings.map((listing) => (
                             <Marker
@@ -144,13 +145,13 @@ export default function Listings() {
                         {mockListings.map((listing) => (<Circle
                             key={listing.id}
                             center={{ lat: listing.address.lat, lng: listing.address.lon }}
-                            radius={listing.metaScore.score}
+                            radius={listing.metaScore.score * 50}
                             options={{
-                                fillColor: '#EE7900',
-                                fillOpacity: 0.6 * listing.metaScore.score / 10,
+                                fillColor: '#rgba(238, 121, 0, 0.49)',
+                                fillOpacity: 0.2 * listing.metaScore.score / 10,
                                 strokeColor: '#EE7900',
                                 strokeOpacity: 0.7,
-                                strokeWeight: 3,
+                                strokeWeight: 2,
                             }}
                         />))}
                     </GoogleMap></LoadScript>
