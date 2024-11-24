@@ -4,42 +4,37 @@ import { argv0 } from "process";
 import { useEffect } from "react";
 
 export default function Home() {
-  useEffect(() => {
-    const user_inst: user = {
-      max_spmkt_dist: 1000,
-      max_pt_dist: 1000,
-      //children_count: 0,
-      max_school_dist: 10000,
-	  max_kindergarden_dist: 0,
+	useEffect(() => {
+		const user_inst: user = {
+			max_spmkt_dist: 1000,
+			max_pt_dist: 1000,
+			//children_count: 0,
+			max_school_dist: 10000,
+			max_kindergarden_dist: 0,
 
-      sqm: 50,
-      obj_type: workspace.apartment, //or "house"
+			sqm: 50,
+			obj_type: workspace.apartment, //or "house"
 
-      workplace: "Boltzmannstraße 3 85748 Garching bei München",
-	  max_workplace_dist: 5000,
+			workplace: "Boltzmannstraße 3 85748 Garching bei München",
+			workplace_lat: 69,
+			workplace_lon: 69,
+			max_workplace_dist: 5000,
 
-      self_capital: 50000,
-      income: 5000,
-      state: "Bayern", //everything else is disgusting (nrw is okay because leonardo might live there)
-      payment_rate: 2000,
-    };
+			self_capital: 50000,
+			income: 5000,
+			state: "Bayern", //everything else is disgusting (nrw is okay because leonardo might live there)
+			payment_rate: 2000,
 
-	const school_weight = 5;
-	const workplace_weight = 10;
-	const kindergarden_weight = 0;
-	const supermarket_weight = 7;
-	const pt_weight = 0;
+			weights: {
+				school: 5,
+				workplace: 10,
+				kindergarden: 0,
+				supermarket: 7,
+				publicTransport: 0,
+			},
 
-	const user_weights: weightOrMetric = {
-		school: 5,
-		workplace: 10,
-		kindergarden: 0,
-		supermarket: 7,
-		publicTransport: 0,
-	}
-
-
-    const city = "Garching bei München";
+			city: "Garching bei München",
+    	};
 
 
 	async function my_main_function() {
@@ -53,18 +48,15 @@ export default function Home() {
 		let immoList: listing[] = await getImmoLists(
 			user_inst.workplace,
 			user_inst.obj_type,
-			city,
+			user_inst.city,
 			user_inst.sqm,
 			max_val,
 		);
 
 		if (immoList) {
-			const workplace_lat = 69;
-			const workplace_lon = 69;
-
 			immoList.forEach((element:listing, _index: number) => {
-				const lat = workplace_lat - element.address.lat;
-				const lon = workplace_lon - element.address.lon;
+				const lat = user_inst.workplace_lat - element.address.lat;
+				const lon = user_inst.workplace_lon - element.address.lon;
 				const squared_sum = Math.pow(lat, 2) + Math.pow(lon, 2);
 
 				element.workplaceDistance = Math.sqrt(squared_sum);
@@ -91,7 +83,7 @@ export default function Home() {
 						return val.distance;
 					})),
 				}
-				element.customMetric = calculateCustomMetric(user_weights, user_metric); 
+				element.customMetric = calculateCustomMetric(user_inst.weights, user_metric); 
 			});
 			
 		}
@@ -241,32 +233,36 @@ export default function Home() {
     apartment,
   }
 
-  type user = {
-    max_spmkt_dist: number,
-    max_pt_dist: number,
-    //children_count: 0,
-    max_school_dist: number,
-	max_kindergarden_dist: number,
+	type user = {
+		max_spmkt_dist: number,
+		max_pt_dist: number,
+		//children_count: 0,
+		max_school_dist: number,
+		max_kindergarden_dist: number,
 
-    sqm: number,
-    obj_type: workspace, //or "house"
+		sqm: number,
+		obj_type: workspace, //or "house"
 
-    workplace: string,
-	max_workplace_dist: number,
+		workplace: string,
+		max_workplace_dist: number,
+		workplace_lat: 69,
+		workplace_lon: 69,
+		city: string,
 
-    self_capital: number,
-    income: number,
-    state: string, //everything else is disgusting (nrw is okay because leonardo might live there)
-    payment_rate: number,
-  };
+		self_capital: number,
+		income: number,
+		state: string, //everything else is disgusting (nrw is okay because leonardo might live there)
+		payment_rate: number,
+		weights: weightOrMetric,
+	};
 
-  type weightOrMetric = {
-	  workplace: number,
-	  school: number,
-	  publicTransport: number,
-	  kindergarden: number, 
-	  supermarket: number,
-  }
+	type weightOrMetric = {
+		workplace: number,
+		school: number,
+		publicTransport: number,
+		kindergarden: number, 
+		supermarket: number,
+	}
 
   type listing_address = {
     "ISO_3166-1_alpha-2": string;
