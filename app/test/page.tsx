@@ -6,19 +6,14 @@ import { useEffect } from "react";
 export default function Home() {
 	useEffect(() => {
 		const user_inst: user = {
-			max_spmkt_dist: 1000,
-			max_pt_dist: 1000,
-			//children_count: 0,
-			max_school_dist: 10000,
-			max_kindergarden_dist: 0,
 
-			sqm: 50,
+			sqm_min: 60,
+			sqm_max: 40,
 			obj_type: workspace.apartment, //or "house"
 
 			workplace: "Boltzmannstraße 3 85748 Garching bei München",
 			workplace_lat: 69,
 			workplace_lon: 69,
-			max_workplace_dist: 5000,
 
 			self_capital: 50000,
 			income: 5000,
@@ -33,11 +28,19 @@ export default function Home() {
 				publicTransport: 0,
 			},
 
+			max_distances: {
+				school: 10000,
+				workplace: 5000,
+				kindergarden: 0,
+				publicTransport: 1000,
+				supermarket: 1000,
+			},
+
 			city: "Garching bei München",
     	};
 
 
-	async function my_main_function() {
+	async function fetchData() {
 		const max_val: number = await aggCosts(
 			user_inst.self_capital, 
 			user_inst.income, 
@@ -49,7 +52,8 @@ export default function Home() {
 			user_inst.workplace,
 			user_inst.obj_type,
 			user_inst.city,
-			user_inst.sqm,
+			user_inst.sqm_min,
+			user_inst.sqm_max,
 			max_val,
 		);
 
@@ -63,21 +67,21 @@ export default function Home() {
 
 				const loc = element.locationFactor.microLocation;
 				const user_metric: weightOrMetric = {
-					workplace: user_inst.max_workplace_dist - element.workplaceDistance,
-					school: user_inst.max_school_dist - Math.min.apply(user_inst.max_school_dist, loc.schools.map((val: listing_locationFactor_microLocation_schools,_index:number) => {
+					workplace: user_inst.max_distances.workplace - element.workplaceDistance,
+					school: user_inst.max_distances.school - Math.min.apply(user_inst.max_distances.school, loc.schools.map((val: listing_locationFactor_microLocation_schools,_index:number) => {
 						return val.distance;
 					})),
-					kindergarden: user_inst.max_kindergarden_dist - Math.min.apply(user_inst.max_kindergarden_dist, loc.kindergarten.map((
+					kindergarden: user_inst.max_distances.kindergarden - Math.min.apply(user_inst.max_distances.kindergarden, loc.kindergarten.map((
 						val: listing_locationFactor_microLocation_kindergarten, _index: number
 					) => {
 						return val.distance;
 					})),
-					supermarket: user_inst.max_spmkt_dist - Math.min.apply(user_inst.max_spmkt_dist, loc.supermarkets.map((
+					supermarket: user_inst.max_distances.supermarket - Math.min.apply(user_inst.max_distances.supermarket, loc.supermarkets.map((
 						val: listing_locationFactor_microLocation_supermarkets, _index: number
 					) => {
 						return val.distance;
 					})),
-					publicTransport: user_inst.max_pt_dist - Math.min.apply(user_inst.max_pt_dist, loc.publicTransport.map((
+					publicTransport: user_inst.max_distances.publicTransport - Math.min.apply(user_inst.max_distances.publicTransport, loc.publicTransport.map((
 						val: listing_locationFactor_microLocation_publicTransport, _index: number
 					) => {
 						return val.distance;
@@ -93,7 +97,7 @@ export default function Home() {
 		}
 	}
 
-	my_main_function();
+	fetchData();
 
   }, []);
 
@@ -182,20 +186,12 @@ export default function Home() {
     search_around: string,
     obj_type: workspace,
     city: string,
-    sqm: number,
+    sqm_min: number,
+    sqm_max: number,
     max_val: number,
   ) => {
-    let type = "";
-    if (obj_type == workspace.apartment) {
-      type = "APARTMENTBUY";
-    } else if (obj_type == workspace.house) {
-      type = "HOUSEBUY";
-    } else {
-      type = "APARTMENTBUY";
-    }
+    const type = obj_type == workspace.house ? "HOUSEBUY" : "APARTMENTBUY";
 
-    const sqm_max = sqm + 20;
-    const sqm_min = sqm < 20 ? 0 : sqm - 20;
     const sqm_max_price = max_val / sqm_max;
 
     const geoSearch = `[{"geoSearchType":"city","region":"Bayern","geoSearchQuery":"${city}"}]`;
@@ -234,19 +230,15 @@ export default function Home() {
   }
 
 	type user = {
-		max_spmkt_dist: number,
-		max_pt_dist: number,
 		//children_count: 0,
-		max_school_dist: number,
-		max_kindergarden_dist: number,
 
-		sqm: number,
+		sqm_min: number,
+		sqm_max: number,
 		obj_type: workspace, //or "house"
 
 		workplace: string,
-		max_workplace_dist: number,
-		workplace_lat: 69,
-		workplace_lon: 69,
+		workplace_lat: number,
+		workplace_lon: number,
 		city: string,
 
 		self_capital: number,
@@ -254,6 +246,7 @@ export default function Home() {
 		state: string, //everything else is disgusting (nrw is okay because leonardo might live there)
 		payment_rate: number,
 		weights: weightOrMetric,
+		max_distances: weightOrMetric,
 	};
 
 	type weightOrMetric = {
