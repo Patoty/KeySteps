@@ -10,7 +10,7 @@ export default function Home() {
       <div className="w-vw -mt-36 h-[45rem] bg-[url('../app/assets/sunset-city-gradient.jpg')] bg-cover bg-no-repeat grid place-items-center">
         <div className="text-center">
           <h2 className="text-3xl sm:text-5xl text-transparent bg-clip-text font-extrabold bg-gradient-to-r from-white to-white p-2">
-            A home for your lifestyle.
+            A Home For Your Lifestyle.
           </h2>
           {/*<button className="bg-white mt-3 px-20 hover:bg-primary text-primary hover:text-white font-bold py-2 px-4 border-b-4 border-primary-ripple hover:border-primary rounded">*/}
           <button className="bg-primary mt-3 px-20 hover:bg-primary-hover text-white font-bold py-2 px-4 border-b-4 border-primary-ripple hover:border-primary rounded">
