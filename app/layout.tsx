@@ -15,10 +15,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="container mx-auto">
+      <body className="container sm:mx-auto mx-4">
         <Navigation />
         {children}
       </body>
     </html>
   );
 }
+
+

@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function Navigation() {
     return (
-        <div className="py-2 px-4 rounded-full my-4 grid grid-flow-col border-gray-200 border justify-between bg-white drop-shadow-sm">
+        <div className="py-2 px-4 rounded-full my-4 grid grid-flow-col border-gray-200 border justify-between bg-white drop-shadow-sm max-w-screen-xl mx-auto">
             <div className="flex space-x-4 items-center mx-2"><Image src={logo} alt="logo" width={128} />
                 <nav><ul className="flex space-x-8 font-medium ml-4"><li>
                     <Link href={"/"} className="hover:text-primary-hover transition-all">HOME</Link>
